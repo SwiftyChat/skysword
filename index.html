@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SKY SWORD SMP — донат</title>
+<link rel="icon" type="image/png" href="servericon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #14170f;
+    --panel: #1e2417;
+    --panel-2: #262f1c;
+    --line: #3a4530;
+    --grass: #6fae4a;
+    --grass-dark: #4d7d33;
+    --amber: #e8a33d;
+    --amber-dark: #b97a24;
+    --text: #eef0e2;
+    --muted: #9aa08a;
+  }
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+  }
+  .pixel{ font-family: 'Press Start 2P', monospace; }
+  .mono{ font-family: 'IBM Plex Mono', monospace; }
+  a{ color: inherit; }
+
+  nav{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 18px 24px;
+    border-bottom: 4px solid var(--line);
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  nav .logo{ font-size: 13px; letter-spacing: 1px; display:flex; align-items:center; gap:10px; }
+  nav .logo img{ width: 28px; height: 28px; object-fit: contain; image-rendering: pixelated; }
+  nav .links{ display:flex; gap: 22px; font-size: 13px; }
+  nav .links a{ color: var(--muted); text-decoration:none; }
+  nav .links a:hover{ color: var(--grass); }
+
+  header{
+    padding: 72px 24px 64px;
+    text-align:center;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(111,174,74,0.12), transparent 60%),
+      var(--bg);
+    border-bottom: 4px solid var(--line);
+  }
+  .eyebrow{
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--amber);
+    margin-bottom: 20px;
+  }
+  h1{
+    font-size: clamp(28px, 5vw, 46px);
+    line-height: 1.4;
+    margin: 0 0 20px;
+    color: var(--text);
+    text-shadow: 3px 3px 0 var(--grass-dark);
+  }
+  .tagline{
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 580px;
+    margin: 0 auto 40px;
+  }
+  .tags{
+    display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom: 40px;
+  }
+  .tag{
+    font-size: 12px;
+    padding: 8px 14px;
+    background: var(--panel);
+    border: 2px solid var(--line);
+    color: var(--grass);
+  }
+
+  .ip-box{
+    display:inline-flex;
+    align-items:center;
+    gap:16px;
+    background: var(--panel);
+    padding: 18px 22px;
+    max-width: 100%;
+  }
+  .ip-box .ip{
+    font-size: clamp(14px, 3vw, 20px);
+    color: var(--text);
+    letter-spacing: 1px;
+  }
+  .copy-btn{
+    background: var(--grass-dark);
+    color: var(--text);
+    border: none;
+    padding: 10px 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid var(--line);
+  }
+  .copy-btn:hover{ background: var(--grass); }
+  .copy-btn:focus-visible, a:focus-visible, button:focus-visible{
+    outline: 3px solid var(--amber);
+    outline-offset: 2px;
+  }
+  .copy-toast{
+    font-size: 12px;
+    color: var(--amber);
+    margin-top: 10px;
+    height: 16px;
+    opacity: 0;
+    transition: opacity .2s;
+  }
+  .copy-toast.show{ opacity: 1; }
+
+  section{ padding: 72px 24px; max-width: 1080px; margin: 0 auto; }
+
+  .rules{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+  }
+  .rule-card{
+    background: var(--panel);
+    padding: 24px;
+  }
+  .rule-card .icon{ font-size: 20px; color: var(--amber); margin-bottom: 12px; }
+  .rule-card h3{ font-size: 15px; margin: 0 0 8px; }
+  .rule-card p{ font-size: 13px; color: var(--muted); margin:0; }
+
+  h2.section-title{
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: var(--amber);
+    text-align:center;
+    margin-bottom: 8px;
+  }
+  h2.section-sub{
+    text-align:center;
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 14px;
+    margin: 0 0 48px;
+  }
+
+  .tiers{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+  }
+  .tier{
+    background: var(--panel-2);
+    display:flex;
+    flex-direction:column;
+    position:relative;
+    overflow: hidden;
+  }
+  .tier.featured{
+    box-shadow:
+      0 0 0 4px var(--bg),
+      0 0 0 8px var(--amber-dark);
+  }
+  .tier .art{
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+    border-bottom: 4px solid var(--line);
+    image-rendering: pixelated;
+  }
+  .tier .body{ padding: 22px; display:flex; flex-direction:column; flex-grow:1; }
+  .tier .badge{
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--bg);
+    background: var(--amber);
+    padding: 4px 10px;
+    z-index: 2;
+  }
+  .tier .name{
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .tier .price{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 26px;
+    color: var(--grass);
+    margin: 8px 0 20px;
+  }
+  .tier ul{
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px;
+    font-size: 13px;
+    color: var(--muted);
+    flex-grow: 1;
+  }
+  .tier li{
+    padding: 6px 0 6px 20px;
+    position: relative;
+  }
+  .tier li::before{
+    content: "▸";
+    position: absolute;
+    left: 0;
+    color: var(--grass);
+  }
+  .buy-btn{
+    display:block;
+    text-align:center;
+    text-decoration:none;
+    background: var(--grass-dark);
+    color: var(--text);
+    font-weight: 600;
+    font-size: 14px;
+    padding: 14px;
+    border: 2px solid var(--line);
+    transition: background .15s;
+  }
+  .buy-btn:hover{ background: var(--grass); }
+
+  .more{
+    margin: 0 0 16px;
+    border: 2px solid var(--line);
+    background: var(--panel);
+  }
+  .more summary{
+    cursor: pointer;
+    list-style: none;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--amber);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    user-select: none;
+  }
+  .more summary::-webkit-details-marker{ display:none; }
+  .more summary::after{ content: "+"; font-family: 'IBM Plex Mono', monospace; }
+  .more[open] summary::after{ content: "–"; }
+  .more p{
+    margin: 0;
+    padding: 0 14px 14px;
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 560px){
+    nav{ flex-direction: column; gap: 12px; }
+    nav .links{ gap: 16px; flex-wrap: wrap; justify-content:center; }
+    header{ padding: 56px 16px 48px; }
+    section{ padding: 48px 16px; }
+    .ip-box{ flex-direction: column; gap: 12px; }
+    .tier .art{ height: 180px; }
+    .tiers{ grid-template-columns: 1fr; }
+    .rules{ grid-template-columns: 1fr; }
+    h1{ font-size: clamp(22px, 8vw, 32px); }
+    .tag{ font-size: 11px; padding: 6px 10px; }
+  }
+
+  @media (min-width: 561px) and (max-width: 900px){
+    .tiers{ grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .howto{
+    background: var(--panel);
+    padding: 32px;
+  }
+  .howto ol{
+    counter-reset: step;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+  }
+  .howto li{
+    counter-increment: step;
+    font-size: 13px;
+    color: var(--muted);
+    padding-left: 8px;
+  }
+  .howto li::before{
+    content: counter(step);
+    font-family: 'IBM Plex Mono', monospace;
+    display:block;
+    font-size: 22px;
+    color: var(--amber);
+    margin-bottom: 8px;
+  }
+  .howto li b{ color: var(--text); }
+
+  footer{
+    text-align:center;
+    padding: 40px 24px 60px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  footer a{ color: var(--grass); text-decoration: underline; }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+    *{ transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="logo pixel"><img src="servericon.png" alt="SKY SWORD SMP">SKY SWORD</span>
+  <div class="links">
+    <a href="#donate">Донат</a>
+    <a href="#rules">Правила</a>
+    <a href="https://t.me/skyswordPayBot" target="_blank" rel="noopener">Поддержка</a>
+  </div>
+</nav>
+
+<header>
+  <div class="eyebrow pixel">SMP · КЛАНОВЫЕ БИТВЫ · БЕЗ ПРИВАТОВ</div>
+  <h1 class="pixel">SKY SWORD<br>SMP</h1>
+  <p class="tagline">Выживание, где решает не привата, а сила твоего клана: строй базу, собирай союзников и сражайся за территорию в честном PVP. Сервер работает на удобных плагинах — без привата на постройки, зато с рангами, телепортами и наградами за донат.</p>
+  <div class="tags">
+    <span class="tag mono">SMP</span>
+    <span class="tag mono">NO PRIVATE</span>
+    <span class="tag mono">КЛАНЫ</span>
+    <span class="tag mono">PVP</span>
+  </div>
+
+  <div class="ip-box">
+    <span class="ip mono" id="server-ip">ru1.mc-serv.ru:26361</span>
+    <button class="copy-btn" onclick="copyIP()">Копировать</button>
+  </div>
+  <div class="copy-toast mono" id="copy-toast">IP скопирован</div>
+</header>
+
+<section id="rules">
+  <h2 class="section-title pixel">ПРАВИЛА МИРА</h2>
+  <h2 class="section-sub">На чём держится сервер</h2>
+  <div class="rules">
+    <div class="rule-card">
+      <div class="icon">▧</div>
+      <h3>Без приватов</h3>
+      <p>Территорию защищает не плагин, а твой клан. Строй где хочешь — и будь готов её отстоять.</p>
+    </div>
+    <div class="rule-card">
+      <div class="icon">⚔</div>
+      <h3>Клановые битвы</h3>
+      <p>Собирай союзников, захватывай территории и сражайся за влияние в открытом PVP.</p>
+    </div>
+    <div class="rule-card">
+      <div class="icon">◈</div>
+      <h3>Донат — это статус, не сила</h3>
+      <p>Привилегии дают престиж, косметику и полезные киты — но не превращают тебя в неубиваемого.</p>
+    </div>
+  </div>
+</section>
+
+<section id="donate">
+  <h2 class="section-title pixel">ДОНАТ</h2>
+  <h2 class="section-sub">Выбери тир — оплата и выдача идут напрямую через бота, реквизиты нигде не публикуются</h2>
+
+  <div class="tiers">
+    <div class="tier">
+      <img class="art" src="hero.png" alt="ГЕРОЙ">
+      <div class="body">
+        <span class="name">[ГЕРОЙ]</span>
+        <div class="price mono">75 ₽</div>
+        <ul>
+          <li>Алмазный кит раз в час</li>
+          <li>Надёжная броня для выживания</li>
+        </ul>
+        <details class="more">
+          <summary>Подробнее</summary>
+          <p>Идеальный старт для новичка доната. Алмазный кит помогает быстро встать на ноги и подготовиться к более серьёзным вылазкам, а крепкая броня даёт запас прочности, чтобы пережить первые стычки на PVP-территориях.</p>
+        </details>
+        <a class="buy-btn" href="https://t.me/skyswordPayBot" target="_blank" rel="noopener">Оформить</a>
+      </div>
+    </div>
+
+    <div class="tier">
+      <img class="art" src="hunter.png" alt="ОХОТНИК">
+      <div class="body">
+        <span class="name">[ОХОТНИК]</span>
+        <div class="price mono">100 ₽</div>
+        <ul>
+          <li>Кит с зельями раз в час</li>
+          <li>Большой ассортимент стрел</li>
+          <li>Зачарованный арбалет</li>
+        </ul>
+        <details class="more">
+          <summary>Подробнее</summary>
+          <p>Для тех, кто предпочитает сражаться на дистанции. Большой запас разных стрел и зачарованный арбалет позволяют контролировать бой издалека, а щедрый набор зелий держит тебя в форме в любой ситуации.</p>
+        </details>
+        <a class="buy-btn" href="https://t.me/skyswordPayBot" target="_blank" rel="noopener">Оформить</a>
+      </div>
+    </div>
+
+    <div class="tier">
+      <img class="art" src="god.png" alt="БОГ">
+      <div class="body">
+        <span class="name">[БОГ]</span>
+        <div class="price mono">200 ₽</div>
+        <ul>
+          <li>Зачарованный незеритовый PVP-сет раз в час</li>
+          <li>Булава II</li>
+        </ul>
+        <details class="more">
+          <summary>Подробнее</summary>
+          <p>Экипировка для серьёзного PVP. Зачарованный незеритовый сет закрывает потребности в защите и уроне, а Булава II — одно из самых мощных ближних оружий сервера, способное сбивать противников с высоты одним ударом.</p>
+        </details>
+        <a class="buy-btn" href="https://t.me/skyswordPayBot" target="_blank" rel="noopener">Оформить</a>
+      </div>
+    </div>
+
+    <div class="tier featured">
+      <span class="badge">Топ тир</span>
+      <img class="art" src="traper.png" alt="ТРАПЕР">
+      <div class="body">
+        <span class="name">[ТРАПЕР]</span>
+        <div class="price mono">250 ₽</div>
+        <ul>
+          <li>Все предметы для ловушек раз в час</li>
+          <li>Кирка «Эффективность V»</li>
+          <li>Незеритовый сет</li>
+        </ul>
+        <details class="more">
+          <summary>Подробнее</summary>
+          <p>Для тех, кто держит территорию хитростью, а не только силой. Полный набор предметов для ловушек позволяет выстраивать сложные защитные и наступательные конструкции, кирка «Эффективность V» ускоряет добычу ресурсов, а незеритовый сет обеспечивает выживаемость даже в самых горячих стычках за клановую территорию.</p>
+        </details>
+        <a class="buy-btn" href="https://t.me/skyswordPayBot" target="_blank" rel="noopener">Оформить</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="howto">
+    <h2 class="section-title pixel" style="text-align:left; margin-bottom:24px;">КАК ЭТО РАБОТАЕТ</h2>
+    <ol>
+      <li><b>Жмёшь «Оформить»</b> — открывается бот @skyswordPayBot.</li>
+      <li><b>Пишешь боту</b> — какой тир выбрал и свой игровой ник, получаешь реквизиты для оплаты лично в чат.</li>
+      <li><b>Оплачиваешь и присылаешь чек</b> — админ проверяет вручную.</li>
+      <li><b>Получаешь донат</b> — админ выдаёт его на сервере.</li>
+      <li><b>Забираешь кит в игре</b> — команда <span class="mono">/kit название</span>, доступно раз в час.</li>
+    </ol>
+  </div>
+</section>
+
+<footer>
+  IP сервера: <span class="mono">ru1.mc-serv.ru:26361</span> · Вопросы — пиши в <a href="https://t.me/skyswordPayBot" target="_blank" rel="noopener">Telegram-бот</a>
+</footer>
+
+<script>
+  function copyIP(){
+    const ip = document.getElementById('server-ip').innerText;
+    navigator.clipboard.writeText(ip).then(() => {
+      const toast = document.getElementById('copy-toast');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1800);
+    });
+  }
+</script>
+
+</body>
+</html>
