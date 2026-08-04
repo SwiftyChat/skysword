@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Топ игроков — SKY SWORD SMP</title>
+<link rel="icon" type="image/png" href="servericon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #080a0d;
+    --bg2: #0d0f14;
+    --panel: #111318;
+    --panel-2: #141720;
+    --panel-hover: #1a1e2a;
+    --line: #1e2535;
+    --line2: #252d40;
+    --blue: #4a8fff;
+    --blue-glow: rgba(74,143,255,0.25);
+    --blue-dark: #2a5fcc;
+    --cyan: #00e5ff;
+    --cyan-glow: rgba(0,229,255,0.15);
+    --amber: #ffb830;
+    --amber-glow: rgba(255,184,48,0.2);
+    --text: #e8eaf2;
+    --text2: #c8cad8;
+    --muted: #6b7090;
+    --muted2: #4a4f6a;
+    --grass: #50c878;
+    --red: #ff4466;
+  }
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+  .pixel{ font-family: 'Press Start 2P', monospace; }
+  .mono{ font-family: 'IBM Plex Mono', monospace; }
+  a{ color: inherit; }
+
+  #snow-canvas{
+    position: fixed; top:0; left:0; width:100%; height:100%;
+    pointer-events:none; z-index:0; opacity:.55;
+  }
+
+  nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 16px 32px; border-bottom: 1px solid var(--line);
+    background: rgba(8,10,13,0.85); backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    position: sticky; top:0; z-index:100;
+  }
+  nav .logo{ font-size:11px; letter-spacing:1px; display:flex; align-items:center; gap:10px; color:var(--text); text-decoration:none; }
+  nav .logo img{ width:28px; height:28px; object-fit:contain; image-rendering:pixelated; filter:drop-shadow(0 0 6px var(--blue)); }
+  nav .links{ display:flex; gap:24px; font-size:13px; }
+  nav .links a{ color: var(--muted); text-decoration:none; transition:color .2s; letter-spacing:.5px; }
+  nav .links a:hover, nav .links a.active{ color: var(--cyan); }
+
+  header{
+    padding: 60px 24px 36px; text-align:center; position:relative; z-index:1;
+    background: radial-gradient(ellipse at 50% -10%, rgba(74,143,255,0.08) 0%, transparent 60%);
+    border-bottom: 1px solid var(--line);
+  }
+  .eyebrow{ font-size:9px; letter-spacing:3px; color:var(--cyan); margin-bottom:20px; opacity:.85; }
+  h1{ font-size: clamp(22px, 4vw, 40px); margin:0 0 14px; color:var(--text); text-shadow: 0 0 40px rgba(74,143,255,0.5); }
+  .tagline{ color: var(--muted); font-size:14px; max-width:520px; margin:0 auto 24px; line-height:1.7; }
+
+  .header-row{
+    display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap;
+  }
+
+  .live-badge{
+    display:inline-flex; align-items:center; gap:8px;
+    background: var(--panel); border:1px solid var(--line2);
+    padding: 10px 16px; border-radius: 20px; font-size: 11px; color: var(--text2);
+    letter-spacing:.5px;
+  }
+  .live-dot{
+    width:8px; height:8px; border-radius:50%; background: var(--grass);
+    box-shadow: 0 0 8px var(--grass); animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ opacity:1; transform:scale(1); }
+    50%{ opacity:.4; transform:scale(.7); }
+  }
+
+  .ip-badge{
+    display:inline-flex; align-items:center; gap:10px;
+    background: var(--panel); border:1px solid var(--line2);
+    padding: 8px 8px 8px 16px; border-radius: 20px;
+  }
+  .ip-badge .ip-label{ font-size:9px; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; margin-right:2px; }
+  .ip-badge .ip-value{ font-size:12px; color: var(--text2); letter-spacing:.5px; }
+  .ip-badge .ip-copy{
+    background: var(--blue-dark); color:#fff; border:none;
+    width:26px; height:26px; border-radius:50%; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; font-size:12px;
+    transition: background .2s;
+  }
+  .ip-badge .ip-copy:hover{ background: var(--blue); }
+  .ip-toast{
+    font-size:10px; color: var(--cyan); margin-top:8px; height:14px; opacity:0; transition:opacity .2s;
+  }
+  .ip-toast.show{ opacity:1; }
+
+  section{ padding: 44px 24px 90px; max-width: 940px; margin: 0 auto; position:relative; z-index:1; }
+
+  .rank-head{
+    display:grid;
+    grid-template-columns: 56px 68px 1fr auto;
+    gap: 16px;
+    padding: 0 18px 10px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--muted2);
+    text-transform: uppercase;
+  }
+  .rank-head .h-right{ text-align:right; }
+
+  .rank-table{ display:flex; flex-direction:column; gap:8px; }
+
+  .rank-row{
+    display:grid;
+    grid-template-columns: 56px 68px 1fr auto;
+    align-items:center;
+    gap: 16px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    padding: 10px 18px;
+    border-radius: 8px;
+    transition: border-color .2s, transform .2s;
+    animation: fadeUp .4s ease both;
+  }
+  .rank-row:hover{ border-color: var(--line2); transform: translateX(4px); }
+
+  .rank-row.top1{ background: linear-gradient(90deg, rgba(255,184,48,0.14), var(--panel) 55%); border-color: rgba(255,184,48,0.5); }
+  .rank-row.top2{ background: linear-gradient(90deg, rgba(200,210,230,0.10), var(--panel) 55%); border-color: rgba(200,210,230,0.4); }
+  .rank-row.top3{ background: linear-gradient(90deg, rgba(205,127,50,0.12), var(--panel) 55%); border-color: rgba(205,127,50,0.4); }
+
+  .pos-plate{
+    width: 40px; height:40px;
+    border-radius: 8px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 16px; font-weight:700; font-style:italic;
+    color: var(--muted);
+    background: var(--bg2);
+    border: 1px solid var(--line2);
+  }
+  .rank-row.top1 .pos-plate{ background: linear-gradient(135deg, #ffcc55, #cc8a00); color:#3a2400; border-color: transparent; box-shadow: 0 0 16px rgba(255,184,48,0.35); }
+  .rank-row.top2 .pos-plate{ background: linear-gradient(135deg, #dfe6f0, #9aa3b5); color:#20242e; border-color: transparent; box-shadow: 0 0 16px rgba(200,210,230,0.25); }
+  .rank-row.top3 .pos-plate{ background: linear-gradient(135deg, #e0a672, #a86530); color:#2a1400; border-color: transparent; box-shadow: 0 0 16px rgba(205,127,50,0.3); }
+
+  .skin-wrap{
+    width: 52px; height:52px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg2);
+    border: 1px solid var(--line2);
+    position: relative;
+  }
+  .skin{
+    width: 100%; height:100%;
+    image-rendering: pixelated;
+    display:block;
+  }
+
+  .pinfo{ min-width:0; }
+  .pname{
+    font-weight:700; font-size: 16px; letter-spacing:.2px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .ptitle{
+    font-size: 12px; color: var(--muted); margin-top: 2px;
+    display:flex; align-items:center; gap:6px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .ptitle .tier-dot{ width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+  .ptitle b{ font-weight:600; }
+  .ptitle .pts{ color: var(--muted2); }
+
+  .tier-badge{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 5px;
+    letter-spacing: .5px;
+    white-space: nowrap;
+    text-align:center;
+  }
+
+  .empty-state{
+    text-align:center;
+    padding: 60px 20px;
+    color: var(--muted);
+    border: 1px dashed var(--line2);
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .empty-state code{
+    background: var(--panel-2);
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: var(--amber);
+  }
+
+  .updated-note{
+    text-align:center;
+    color: var(--muted2);
+    font-size: 11px;
+    margin-top: 24px;
+    letter-spacing: .5px;
+  }
+
+  footer{
+    text-align:center; padding: 40px 24px 60px; color: var(--muted2);
+    font-size:12px; position:relative; z-index:1; border-top:1px solid var(--line);
+  }
+  footer a{ color: var(--blue); text-decoration:none; }
+  footer a:hover{ text-decoration:underline; }
+
+  @keyframes fadeUp{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+
+  @media (max-width: 560px){
+    nav{ padding:14px 16px; flex-direction:column; gap:12px; }
+    nav .links{ gap:14px; }
+    header{ padding: 44px 16px 30px; }
+    .header-row{ flex-direction:column; }
+    section{ padding: 32px 14px 70px; }
+    .rank-head{ display:none; }
+    .rank-row{ grid-template-columns: 40px 44px 1fr; gap: 10px; padding: 10px 12px; }
+    .tier-badge{ display:none; }
+    .pname{ font-size:14px; }
+    .pos-plate{ width:32px; height:32px; font-size:13px; }
+    .skin-wrap{ width:40px; height:40px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ transition:none !important; animation:none !important; }
+    #snow-canvas{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="snow-canvas"></canvas>
+
+<nav>
+  <a class="logo pixel" href="index.html">
+    <img src="servericon.png" alt="SKY SWORD SMP">
+    SKY SWORD
+  </a>
+  <div class="links mono">
+    <a href="index.html">Главная</a>
+    <a href="index.html#donate">Донат</a>
+    <a href="rankings.html" class="active">Топ игроков</a>
+  </div>
+</nav>
+
+<header>
+  <div class="eyebrow pixel">PVP РЕЙТИНГ</div>
+  <h1 class="pixel">ТОП ИГРОКОВ</h1>
+  <p class="tagline">Рейтинг по PvP-очкам сервера. Обновляется автоматически прямо с игрового сервера.</p>
+  <div class="header-row">
+    <div class="live-badge mono">
+      <span class="live-dot"></span>
+      <span id="live-text">Обновляется автоматически</span>
+    </div>
+    <div class="ip-badge">
+      <span class="ip-label mono">IP сервера</span>
+      <span class="ip-value mono" id="server-ip">play.skysword.fun</span>
+      <button class="ip-copy" onclick="copyIP()" title="Копировать">⧉</button>
+    </div>
+  </div>
+  <div class="ip-toast mono" id="ip-toast">✓ IP скопирован</div>
+</header>
+
+<section>
+  <div class="rank-head mono">
+    <span>#</span>
+    <span></span>
+    <span>Игрок</span>
+    <span class="h-right">Ранг</span>
+  </div>
+  <div class="rank-table" id="rank-table">
+    <div class="empty-state mono">Загрузка рейтинга…</div>
+  </div>
+  <div class="updated-note mono" id="updated-note"></div>
+</section>
+
+<footer>
+  IP сервера: <span class="mono">play.skysword.fun</span>&nbsp;·&nbsp;<a href="index.html">На главную</a>
+</footer>
+
+<script>
+  function copyIP(){
+    const ip = document.getElementById('server-ip').innerText;
+    navigator.clipboard.writeText(ip).then(() => {
+      const toast = document.getElementById('ip-toast');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1800);
+    });
+  }
+
+  // ================================
+  // ЦВЕТА И НАЗВАНИЯ ТИРОВ (совпадают с getRankColor из skyauction.sk)
+  // ================================
+  const TIER_STYLES = {
+    HT1: { color:'#ff5555', bg:'rgba(255,85,85,0.14)', bold:true,  title:'Грандмастер Боя' },
+    LT1: { color:'#ff5555', bg:'rgba(255,85,85,0.08)', bold:false, title:'Мастер Боя'       },
+    HT2: { color:'#ffaa00', bg:'rgba(255,170,0,0.14)', bold:true,  title:'Эксперт Боя'      },
+    LT2: { color:'#ffaa00', bg:'rgba(255,170,0,0.08)', bold:false, title:'Про Боец'         },
+    HT3: { color:'#ffff55', bg:'rgba(255,255,85,0.14)', bold:true, title:'Опытный Боец'     },
+    LT3: { color:'#ffff55', bg:'rgba(255,255,85,0.08)', bold:false,title:'Боец'             },
+    HT4: { color:'#55ff55', bg:'rgba(85,255,85,0.14)', bold:true,  title:'Новичок+'         },
+    LT4: { color:'#55ff55', bg:'rgba(85,255,85,0.08)', bold:false, title:'Новичок'          },
+    HT5: { color:'#aaaaaa', bg:'rgba(170,170,170,0.14)', bold:true,title:'Стажёр'           },
+    LT5: { color:'#aaaaaa', bg:'rgba(170,170,170,0.08)', bold:false,title:'Новобранец'      },
+  };
+
+  const DATA_URL = 'rankings.json';      // файл, который пишет api/update-rankings.php
+  const REFRESH_MS = 15000;              // как часто перечитываем файл (15 сек)
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  function timeAgo(ts){
+    if(!ts) return '';
+    const sec = Math.max(0, Math.floor(Date.now()/1000 - ts));
+    if(sec < 60) return `обновлено ${sec} сек. назад`;
+    const min = Math.floor(sec/60);
+    return `обновлено ${min} мин. назад`;
+  }
+
+  function render(players, updatedAt){
+    const table = document.getElementById('rank-table');
+    const note = document.getElementById('updated-note');
+
+    if(!players || players.length === 0){
+      table.innerHTML = `<div class="empty-state mono">
+        Пока нет данных для рейтинга.<br>
+        Проверь, что Minecraft-сервер успешно отправляет данные на <code>api/update-rankings.php</code>.
+      </div>`;
+      note.textContent = '';
+      return;
+    }
+
+    const sorted = [...players].sort((a,b) => (b.points||0) - (a.points||0));
+
+    table.innerHTML = sorted.map((p, i) => {
+      const pos = i + 1;
+      const tier = TIER_STYLES[p.rank] || TIER_STYLES.LT5;
+      const topClass = pos === 1 ? 'top1' : pos === 2 ? 'top2' : pos === 3 ? 'top3' : '';
+      const posLabel = pos <= 3 ? `${pos}.` : `#${pos}`;
+      const name = escapeHtml(p.name || '?');
+      const skinUrl = `https://mc-heads.net/avatar/${encodeURIComponent(p.name || 'MHF_Steve')}/100`;
+
+      return `
+        <div class="rank-row ${topClass}" style="animation-delay:${Math.min(i,10)*0.03}s">
+          <div class="pos-plate mono">${posLabel}</div>
+          <div class="skin-wrap">
+            <img class="skin" src="${skinUrl}" alt="${name}" loading="lazy" onerror="this.src='https://mc-heads.net/avatar/MHF_Steve/100'">
+          </div>
+          <div class="pinfo">
+            <div class="pname">${name}</div>
+            <div class="ptitle mono">
+              <span class="tier-dot" style="background:${tier.color}"></span>
+              <b style="color:${tier.color}">${escapeHtml(tier.title)}</b>
+              <span class="pts">(${p.points ?? 0} points)</span>
+            </div>
+          </div>
+          <div class="tier-badge mono" style="color:${tier.color}; background:${tier.bg}; font-weight:${tier.bold ? 800 : 500};">
+            ${escapeHtml(p.rank || 'LT5')}
+          </div>
+        </div>`;
+    }).join('');
+
+    note.textContent = timeAgo(updatedAt);
+  }
+
+  async function loadRankings(){
+    try{
+      const res = await fetch(DATA_URL + '?t=' + Date.now(), { cache: 'no-store' });
+      if(!res.ok) throw new Error('no data yet');
+      const data = await res.json();
+      render(data.players, data.updated_at);
+    }catch(e){
+      const table = document.getElementById('rank-table');
+      if(table.querySelector('.rank-row')) return; // не затираем уже отрисованный список из-за разовой ошибки сети
+      table.innerHTML = `<div class="empty-state mono">
+        Рейтинг ещё не поступал с сервера.<br>
+        Проверь, что файл <code>rankings.json</code> существует рядом с сайтом
+        и что Minecraft-сервер настроен на отправку данных (см. 0_prefix_common.sk).
+      </div>`;
+    }
+  }
+
+  loadRankings();
+  setInterval(loadRankings, REFRESH_MS);
+
+  /* ── SNOWFLAKES (как на главной странице) ── */
+  (function(){
+    const canvas = document.getElementById('snow-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, flakes = [];
+    const CHARS = ['❄', '❅', '❆', '*', '·', '✦'];
+    const COUNT = window.innerWidth < 600 ? 35 : 70;
+
+    function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+    function mkFlake(){
+      return {
+        x: Math.random()*W, y: Math.random()*H - H,
+        size: Math.random()*11+4, speed: Math.random()*0.8+0.2,
+        drift: (Math.random()-0.5)*0.4, opacity: Math.random()*0.5+0.1,
+        char: CHARS[Math.floor(Math.random()*CHARS.length)],
+        rot: Math.random()*Math.PI*2, rotSpeed:(Math.random()-0.5)*0.012,
+      };
+    }
+    for(let i=0;i<COUNT;i++){ const f = mkFlake(); f.y = Math.random()*H; flakes.push(f); }
+
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      for(const f of flakes){
+        ctx.save(); ctx.translate(f.x, f.y); ctx.rotate(f.rot);
+        ctx.globalAlpha = f.opacity; ctx.fillStyle = '#a8c8ff';
+        ctx.font = `${f.size}px serif`; ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(f.char, 0, 0); ctx.restore();
+        f.y += f.speed; f.x += f.drift; f.rot += f.rotSpeed;
+        if(f.y > H+20 || f.x < -30 || f.x > W+30){ Object.assign(f, mkFlake()); f.y=-20; f.x=Math.random()*W; }
+      }
+      requestAnimationFrame(draw);
+    }
+    resize(); window.addEventListener('resize', resize); draw();
+  })();
+</script>
+
+</body>
+</html>
